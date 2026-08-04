@@ -1,0 +1,10 @@
+//
+//  Config.xcconfig
+//  DoneWhen
+//
+//  Created by Felipe Espinoza on 21/07/2026.
+//
+
+// Configuration settings file format documentation can be found at:
+// https://developer.apple.com/documentation/xcode/adding-a-build-configuration-file-to-your-project
+CLOUDKIT_ENVIRONMENT = Development
