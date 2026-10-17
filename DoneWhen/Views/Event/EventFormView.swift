@@ -59,7 +59,7 @@ struct EditEventFormView: View {
                 hasRepeat = false
             }
         }
-        .navigationTitle("New Action")
+        .navigationTitle("Edit Event")
         #if os(macOS)
         .padding()
         #endif

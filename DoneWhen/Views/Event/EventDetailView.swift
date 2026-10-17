@@ -4,6 +4,7 @@ import SwiftData
 struct EventDetailView: View {
     @Environment(\.modelContext) private var modelContext
     @State private var showingAddSheet: Bool = false
+    @State private var showingEditSheet: Bool = false
 
     let event: Event
 
@@ -152,7 +153,7 @@ struct EventDetailView: View {
                     }
 
                     Button {
-//                        showingAddSheet = true
+                        showingEditSheet = true
                     } label: {
                         Label("Edit Event", systemImage: "pencil")
                             .labelStyle(.titleAndIcon)
@@ -160,6 +161,14 @@ struct EventDetailView: View {
                 } label: {
                     Label("More", systemImage: "ellipsis")
                 }
+            }
+        }
+        .sheet(isPresented: $showingEditSheet) {
+            NavigationStack {
+                EditEventFormView(event: event)
+                #if os(macOS)
+                    .frame(minWidth: 400, minHeight: 400, alignment: .topLeading)
+                #endif
             }
         }
         .sheet(isPresented: $showingAddSheet) {
