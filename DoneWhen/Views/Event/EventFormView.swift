@@ -13,6 +13,7 @@ struct EditEventFormView: View {
     @State private var hasRepeat: Bool = false
     @State private var repeatPeriod: RepeatPeriod = .week
     @State private var repeatInterval: Int = 1
+    @State private var description: String = ""
 
     var body: some View {
         Form {
@@ -38,12 +39,17 @@ struct EditEventFormView: View {
                 }
             }
 
+            Section("Description") {
+                TextEditor(text: $description)
+            }
+
             #if os(macOS)
             Button("Save", action: save)
             #endif
         }
         .task {
             name = event.name
+            description = event.descriptionContent
 
             if let eventRepeatPeriod = event.repeatPeriod, let eventRepeatInterval = event.repeatInterval {
                 hasRepeat = true
@@ -76,6 +82,7 @@ struct EditEventFormView: View {
         event.name = name
         event.repeatPeriod = hasRepeat ? repeatPeriod : nil
         event.repeatInterval = hasRepeat ? repeatInterval : nil
+        event.descriptionContent = description
         do {
             try modelContext.save()
 

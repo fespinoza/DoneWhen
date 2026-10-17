@@ -96,6 +96,12 @@ struct EventDetailView: View {
 
     var body: some View {
         List {
+            if !event.descriptionContent.isEmpty {
+                Text(event.descriptionContent)
+                    .foregroundStyle(.secondary)
+                    .padding(.vertical)
+            }
+
             if occurrences.isEmpty {
                 ContentUnavailableView(
                     "No Occurrences",
@@ -104,6 +110,8 @@ struct EventDetailView: View {
                 )
             } else {
                 HStack {
+                    statsView(title: "Occurrence Count", message: "\(occurrences.count) times")
+
                     statsView(title: "Repeats", message: averageValueMessage)
 
                     statsView(title: "Last Tracked", message: lastOccurrenceMessage)
@@ -124,17 +132,34 @@ struct EventDetailView: View {
                 .listRowSeparator(.hidden)
             }
         }
+        #if os(macOS)
+        .safeAreaInset(edge: .top, content: {
+            Text(event.name)
+                .font(.title.bold())
+        })
+        #endif
         .listStyle(.plain)
         .navigationTitle(event.name)
         .scrollContentBackground(.hidden)
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
-                Button {
-                    showingAddSheet = true
+                Menu {
+                    Button {
+                        showingAddSheet = true
+                    } label: {
+                        Label("Add Occurrence", systemImage: "plus")
+                            .labelStyle(.titleAndIcon)
+                    }
+
+                    Button {
+//                        showingAddSheet = true
+                    } label: {
+                        Label("Edit Event", systemImage: "pencil")
+                            .labelStyle(.titleAndIcon)
+                    }
                 } label: {
-                    Label("Add Occurrence", systemImage: "plus")
+                    Label("More", systemImage: "ellipsis")
                 }
-                .buttonStyle(.glassProminent)
             }
         }
         .sheet(isPresented: $showingAddSheet) {
@@ -194,9 +219,21 @@ private struct Demo: View {
 }
 
 #Preview {
-    NavigationStack {
-        PreviewDataContainer {
-            Demo()
+    TabView {
+        Tab {
+            NavigationStack {
+                PreviewDataContainer {
+                    Demo()
+                }
+            }
+        } label: {
+            Label("Hello", systemImage: "pencil")
+        }
+
+        Tab {
+            Text("TODO")
+        } label: {
+            Label("Another", systemImage: "pencil")
         }
     }
 }

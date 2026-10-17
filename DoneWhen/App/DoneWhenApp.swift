@@ -92,6 +92,9 @@ struct ContainerFactory {
         let vacuumClean = Event(
             name: "Vacuum clean",
             creationDate: Date(),
+            descriptionContent: """
+            Use both Fido and the manual vacuum cleaner in both floors
+            """
         )
 
         let cleanBathroom = Event(

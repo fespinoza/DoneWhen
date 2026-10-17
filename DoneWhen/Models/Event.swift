@@ -1,7 +1,7 @@
 import SwiftData
 import Foundation
 
-typealias CurrentVersion = ModelsV2
+typealias CurrentVersion = ModelsV3
 
 typealias Event = CurrentVersion.Event
 typealias Occurrence = CurrentVersion.Occurrence
@@ -11,6 +11,7 @@ enum MigrationPlan: SchemaMigrationPlan {
     static let schemas: [any VersionedSchema.Type] = [
         ModelsV1.self,
         ModelsV2.self,
+        ModelsV3.self,
     ]
 
     static let stages: [MigrationStage] = [
@@ -25,7 +26,8 @@ enum MigrationPlan: SchemaMigrationPlan {
                 }
                 try context.save()
             }
-        )
+        ),
+        .lightweight(fromVersion: ModelsV2.self, toVersion: ModelsV3.self),
     ]
 }
 
@@ -107,6 +109,76 @@ enum ModelsV2: VersionedSchema {
             self.repeatInterval = repeatInterval
             self.repeatPeriod = repeatPeriod
             self.lastOccurrenceDate = lastOccurrenceDate
+        }
+
+        var lastOccurrence: Occurrence? {
+            occurrences?.sorted(by: { $0.date < $1.date }).last
+        }
+
+        func recomputeLastOccurrenceDate() {
+            lastOccurrenceDate = occurrences?.map(\.date).max()
+        }
+
+        func daysSinceLastOccurrence(with calendar: Calendar = .current, to date: Date = .init()) -> Int? {
+            guard let lastOccurrenceDate else { return nil }
+
+            let start = calendar.startOfDay(for: lastOccurrenceDate)
+            let end = calendar.startOfDay(for: date)
+
+            return calendar.dateComponents([.day], from: start, to: end).day
+        }
+    }
+
+    enum RepeatPeriod: String, Codable, CaseIterable {
+        case day
+        case week
+        case month
+        case year
+    }
+
+    @Model
+    class Occurrence {
+        var event: Event? = nil
+
+        var date: Date = Date()
+
+        init(event: Event, date: Date) {
+            self.event = event
+            self.date = date
+        }
+    }
+}
+
+enum ModelsV3: VersionedSchema {
+    static let models: [any PersistentModel.Type] = [Event.self, Occurrence.self]
+    static let versionIdentifier: Schema.Version = .init(3, 0, 0)
+
+    @Model
+    class Event {
+        var name: String = ""
+        var creationDate: Date = Date()
+        var repeatInterval: Int?
+        var repeatPeriod: RepeatPeriod?
+        var lastOccurrenceDate: Date?
+        var descriptionContent: String = ""
+
+        @Relationship(deleteRule: .cascade, inverse: \Occurrence.event)
+        var occurrences: [Occurrence]? = []
+
+        init(
+            name: String,
+            creationDate: Date = .init(),
+            repeatInterval: Int? = nil,
+            repeatPeriod: RepeatPeriod? = nil,
+            lastOccurrenceDate: Date? = nil,
+            descriptionContent: String = ""
+        ) {
+            self.name = name
+            self.creationDate = creationDate
+            self.repeatInterval = repeatInterval
+            self.repeatPeriod = repeatPeriod
+            self.lastOccurrenceDate = lastOccurrenceDate
+            self.descriptionContent = descriptionContent
         }
 
         var lastOccurrence: Occurrence? {
