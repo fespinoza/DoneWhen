@@ -7,7 +7,9 @@ struct EventDetailView: View {
 
     let event: Event
 
-    @Query(sort: \Occurrence.date, order: .reverse) private var occurrences: [Occurrence]
+//    @Query(sort: \Occurrence.date, order: .reverse) private var occurrences: [Occurrence]
+
+    var occurrences: [Occurrence] { event.occurrences ?? [] }
 
     enum Row: Hashable, Identifiable {
         case occurrence(Occurrence)
@@ -75,13 +77,13 @@ struct EventDetailView: View {
 
     init(event: Event) {
         self.event = event
-        let eventID = event.persistentModelID
-        _occurrences = Query(
-            filter: #Predicate<Occurrence> { occurrence in
-                occurrence.event?.persistentModelID == eventID
-            },
-            sort: [SortDescriptor(\.date, order: .reverse)]
-        )
+//        let eventID = event.persistentModelID
+//        _occurrences = Query(
+//            filter: #Predicate<Occurrence> { occurrence in
+//                occurrence.event?.persistentModelID == eventID
+//            },
+//            sort: [SortDescriptor(\.date, order: .reverse)]
+//        )
     }
 
     var averageValueMessage: String {
