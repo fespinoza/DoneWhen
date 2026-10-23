@@ -93,7 +93,7 @@ public struct OccurrenceListView: View {
             }
             .presentationDetents([.medium, .large])
         }
-        .task { try? normalizeEvents() }
+//        .task { try? normalizeEvents() }
     }
 
     func normalizeEvents() throws {
