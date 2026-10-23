@@ -163,6 +163,13 @@ struct DoneWhenApp: App {
                 .tabItem {
                     Label("Events", systemImage: "checkmark.circle")
                 }
+
+                NavigationStack {
+                    SettingsView()
+                }
+                .tabItem {
+                    Label("Settings", systemImage: "gearshape")
+                }
             }
         }
         .modelContainer(ContainerFactory.sharedContainer)

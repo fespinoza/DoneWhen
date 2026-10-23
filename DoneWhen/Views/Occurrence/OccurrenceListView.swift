@@ -118,6 +118,7 @@ private struct OccurrenceDayHeader: View {
 }
 
 private struct OccurrenceFeedRow: View {
+    @AppStorage(Anonymization.preferenceKey) private var anonymizeData = false
     let occurrence: Occurrence
 
     var body: some View {
@@ -161,7 +162,7 @@ private struct OccurrenceFeedRow: View {
             return "No Action"
         }
 
-        return name
+        return Anonymization.displayName(name, enabled: anonymizeData)
     }
 
     private var hasActionName: Bool {

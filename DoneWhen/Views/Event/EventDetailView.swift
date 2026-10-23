@@ -2,6 +2,7 @@ import SwiftUI
 import SwiftData
 
 struct EventDetailView: View {
+    @AppStorage(Anonymization.preferenceKey) private var anonymizeData = false
     @Environment(\.modelContext) private var modelContext
     @State private var showingAddSheet: Bool = false
 
@@ -125,7 +126,7 @@ struct EventDetailView: View {
             }
         }
         .listStyle(.plain)
-        .navigationTitle(event.name)
+        .navigationTitle(Anonymization.displayName(event.name, enabled: anonymizeData))
         .scrollContentBackground(.hidden)
         .toolbar {
             ToolbarItem(placement: .primaryAction) {

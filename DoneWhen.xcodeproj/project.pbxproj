@@ -39,6 +39,11 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		9B014CAC308BED210068B228 /* docs */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = docs;
+			sourceTree = "<group>";
+		};
 		9B770A723033A9DD005007E0 /* DoneWhenTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = DoneWhenTests;
@@ -76,6 +81,7 @@
 		9B9D8F5C30226CE2004A76F6 = {
 			isa = PBXGroup;
 			children = (
+				9B014CAC308BED210068B228 /* docs */,
 				9B9D8F6730226CE2004A76F6 /* DoneWhen */,
 				9B770A723033A9DD005007E0 /* DoneWhenTests */,
 				9B9D8F6630226CE2004A76F6 /* Products */,

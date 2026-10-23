@@ -79,40 +79,37 @@ public struct EventByNameListView: View {
         @Query private var events: [Event]
         @Environment(\.modelContext) var context
 
+        @AppStorage(Anonymization.preferenceKey) private var anonymizeData = false
+        let ascending: Bool
+        let sortCase: SortCase
+        let filterText: String
+
         init(ascending: Bool, sortCase: SortCase, filterText: String, eventToEdit: Binding<Event?>) {
-            let direction: SortOrder = ascending ? .forward : .reverse
-
-            let sort: [SortDescriptor<Event>] = switch sortCase {
-            case .alphabetically:
-                [SortDescriptor(\.name, order: direction)]
-            case .byLastOccurrence:
-                [
-                    SortDescriptor(\.lastOccurrenceDate, order: direction),
-                    SortDescriptor(\.name, order: .forward),
-                ]
-            }
-
+            self.ascending = ascending
+            self.sortCase = sortCase
+            self.filterText = filterText
             _eventToEdit = eventToEdit
-            _events = Query(
-                filter: #Predicate<Event> {
-                    if filterText.isEmpty {
-                        true
-                    } else {
-                        $0.name.localizedStandardContains(filterText)
-                    }
-                },
-                sort: sort,
-                animation: .default
+            _events = Query(sort: [SortDescriptor(\.creationDate)])
+        }
+
+        private var displayedEvents: [EventDisplayItem] {
+            EventDisplayItem.prepare(
+                events,
+                filterText: filterText,
+                ascending: ascending,
+                sortByName: sortCase == .alphabetically,
+                displayName: { Anonymization.displayName($0, enabled: anonymizeData) }
             )
         }
 
         var body: some View {
             List {
-                ForEach(events) { event in
+                ForEach(displayedEvents) { item in
+                    let event = item.event
                     NavigationLink {
                         EventDetailView(event: event)
                     } label: {
-                        rowContent(for: event)
+                        rowContent(for: event, name: item.name)
                     }
                     .swipeActions { actions(for: event) }
                     .contextMenu { actions(for: event) }
@@ -120,12 +117,12 @@ public struct EventByNameListView: View {
             }
         }
 
-        func rowContent(for event: Event) -> some View {
+        func rowContent(for event: Event, name: String) -> some View {
             HStack {
                 eventCountBadge(for: event)
 
                 VStack(alignment: .leading) {
-                    Text(event.name)
+                    Text(name)
                         .font(.headline)
 
                     if let daysSinceLastOccurrence = event.daysSinceLastOccurrence() {
